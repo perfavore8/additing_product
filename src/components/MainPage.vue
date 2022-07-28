@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div class="app" :class="{ disable: show_filters }">
     <div class="container">
       <div class="header"></div>
       <div class="content">
@@ -393,5 +393,8 @@ export default {
       }
     }
   }
+}
+.disable {
+  pointer-events: none;
 }
 </style>
