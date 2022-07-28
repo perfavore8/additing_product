@@ -4,7 +4,13 @@
       <div class="header"></div>
       <div class="content">
         <div class="top">
-          <selector-vue :options_props="short_data" @select="select" />
+          <selector-vue
+            :options_props="short_data"
+            @select="select"
+            :selected_option="{
+              name: 'Добавление (поиск на складе по названию или артикулу)...',
+            }"
+          />
           <div class="btns">
             <input
               type="checkbox"
@@ -13,7 +19,7 @@
               id="grid"
             />
             <label for="grid"></label>
-            <button class="btn">
+            <button class="btn" @click="show_filters = true">
               <div class="icon"></div>
               +
             </button>
@@ -91,14 +97,21 @@
       <div class="footer"></div>
     </div>
   </div>
+  <teleport to="body">
+    <keep-alive>
+      <filters-modal v-if="show_filters" @close="close_filters"></filters-modal>
+    </keep-alive>
+  </teleport>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import SelectorVue from "@/components/SelectorVue";
+import FiltersModal from "@/components/FiltersModal.vue";
 export default {
   components: {
     SelectorVue,
+    FiltersModal,
   },
   data() {
     return {
@@ -111,6 +124,7 @@ export default {
       cat_for_short_dat: ["Название", "Артикул", "№ партии"],
       rows: [],
       show_cards: false,
+      show_filters: false,
     };
   },
   computed: {
@@ -147,6 +161,9 @@ export default {
     },
   },
   methods: {
+    close_filters() {
+      this.show_filters = false;
+    },
     select(value) {
       this.short_data.forEach((val, idx) => {
         if (val.name == value.name) this.short_data.splice(idx, 1);
@@ -215,6 +232,7 @@ export default {
     width: 34%;
     height: 100%;
     padding: 20px;
+    margin-left: 65px;
     border: 1px solid #ddd;
     .header {
       margin-bottom: 30px;
@@ -232,7 +250,7 @@ export default {
           display: flex;
           flex-direction: row;
           align-items: center;
-          gap: 5px;
+          gap: 15px;
           .checkbox {
             position: absolute;
             z-index: -1;
@@ -273,6 +291,7 @@ export default {
             background: #357f34;
             border: none;
             border-radius: 5px;
+            outline: none;
             .icon {
               width: inherit;
               height: inherit;
@@ -280,7 +299,8 @@ export default {
               @include bg_image("@/assets/plus.svg", 60% 60%);
             }
           }
-          .btn:hover {
+          .btn:hover,
+          .btn:focus-visible {
             background-color: #339b31;
             box-shadow: 0 0 5px 2px rgb(53 127 52 / 25%);
           }

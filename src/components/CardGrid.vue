@@ -156,7 +156,7 @@ import FilterList from "@/components/FiltersSelections/FilterList.vue";
 import FilterDate from "@/components/FiltersSelections/FilterDate.vue";
 import FilterFlag from "@/components/FiltersSelections/FilterFlag.vue";
 export default {
-  name: "Main_grid",
+  name: "Card_grid",
   components: {
     EditItem,
     FilterNumber,
