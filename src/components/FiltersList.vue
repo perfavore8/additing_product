@@ -1,7 +1,12 @@
 <template>
   <transition-group name="mdl">
     <div class="filters">
-      <div class="item" v-for="(filter, idx) in filtersValue" :key="idx">
+      <div
+        class="item"
+        v-for="(filter, idx) in filtersValue"
+        :key="idx"
+        v-show="show_filters[idx]"
+      >
         <div class="title">
           {{ params[idx + 1] }}
         </div>
@@ -56,6 +61,18 @@ export default {
     FilterDate,
     FilterFlag,
   },
+  props: {
+    show_filters: {
+      type: Array,
+      required: true,
+      default() {
+        return [];
+      },
+    },
+  },
+  emits: {
+    updateFiltersValue: null,
+  },
   data() {
     return {
       filtersValue: [],
@@ -66,6 +83,14 @@ export default {
   },
   mounted() {
     this.feelFilters();
+  },
+  watch: {
+    filtersValue: {
+      handler: function () {
+        this.$emit("updateFiltersValue", this.filtersValue);
+      },
+      deep: true,
+    },
   },
   methods: {
     change_filter_value(new_obj, idx) {
@@ -116,8 +141,8 @@ export default {
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.05);
   .item {
-    max-width: 23%;
-    width: min-content;
+    // max-width: 23%;
+    // width: min-content;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -131,9 +156,9 @@ export default {
       @include font(500, 16px, 19px);
     }
   }
-  .item:deep(.filter) {
-    min-width: 100px;
-    max-width: none;
-  }
+  // .item:deep(.filter) {
+  //   min-width: 100px;
+  //   max-width: none;
+  // }
 }
 </style>

@@ -25,9 +25,6 @@
             </button>
           </div>
         </div>
-        <div class="bottom" v-if="!show_cards">
-          <div class="row" v-for="row in rows" :key="row">{{ row }}</div>
-        </div>
         <div class="bottom" v-if="show_cards">
           <div
             class="path"
@@ -35,7 +32,7 @@
             :key="item"
             v-show="sel_idx == i && show_categoryes"
           >
-            <h2>{{ item }}:</h2>
+            <!-- <h2>{{ item }}:</h2> -->
             <div class="links">
               <div v-for="idx in i" :key="idx">
                 <a
@@ -89,8 +86,22 @@
                   <div class="value">{{ item }}</div>
                 </div>
               </div>
-              <div class="card_footer"></div>
+              <div class="card_footer">
+                <button @click="update_changeValue([row])">
+                  Добавить к сделке
+                </button>
+              </div>
             </div>
+          </div>
+        </div>
+        <div class="bottom">
+          <div class="row" v-for="(row, idx) in rows" :key="row">
+            <label>
+              {{ row }}
+            </label>
+            <button class="btn" @click="handle_delete(row, idx)">
+              <div class="icon"></div>
+            </button>
           </div>
         </div>
       </div>
@@ -99,7 +110,11 @@
   </div>
   <teleport to="body">
     <keep-alive>
-      <filters-modal v-if="show_filters" @close="close_filters"></filters-modal>
+      <filters-modal
+        v-if="show_filters"
+        @close="close_filters"
+        @update_changeValue="update_changeValue"
+      ></filters-modal>
     </keep-alive>
   </teleport>
 </template>
@@ -150,7 +165,7 @@ export default {
   },
   mounted() {
     this.get_data_categoryes();
-    this.get_short_data();
+    this.get_short_data(this.data);
   },
   watch: {
     show_cards() {
@@ -161,6 +176,20 @@ export default {
     },
   },
   methods: {
+    handle_delete(row, idx) {
+      this.short_data.push({ name: row, value: Math.random() });
+      this.rows.splice(idx, 1);
+    },
+    update_changeValue(arr) {
+      arr.forEach((val) => {
+        this.get_short_data([val]);
+        const name = this.short_data[this.short_data.length - 1].name;
+        if (!this.rows.includes(name)) {
+          this.rows.push(name);
+        }
+        this.short_data.pop();
+      });
+    },
     close_filters() {
       this.show_filters = false;
     },
@@ -197,9 +226,9 @@ export default {
       });
       Object.assign(this.categoryes, result);
     },
-    get_short_data() {
-      this.short_data = [];
-      this.data.forEach((val, index) => {
+    get_short_data(arr) {
+      // this.short_data = [];
+      arr.forEach((val, index) => {
         const search_idx = (val) => {
           return this.params.indexOf(val) - 1;
         };
@@ -207,7 +236,7 @@ export default {
         this.cat_for_short_dat.forEach((value, idx) => {
           idx == 0
             ? (str = str + val[search_idx(value)] + " (")
-            : (str = str + value + ": " + val[search_idx(value)]);
+            : (str = str + value + ": " + val[search_idx(value)] + " ");
         });
         str = str + ")";
         const dat = {
@@ -242,9 +271,18 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        margin-bottom: 30px;
         .v-select {
           width: calc(80% - 26px);
+        }
+        .v-select:deep(.title) {
+          p {
+            overflow-x: hidden;
+            white-space: nowrap;
+            max-height: 34px;
+          }
+          .arrow {
+            margin-left: 10px;
+          }
         }
         .btns {
           display: flex;
@@ -270,18 +308,21 @@ export default {
             flex-grow: 0;
             border-radius: 0.25em;
             margin-left: 17px;
-            @include bg_image("@/assets/grid.svg", 100%);
+            @include bg_image("@/assets/arrow.svg", 100%);
             cursor: pointer;
-            transition: background-image 0.15s ease-out;
+            transition: background-image 0.15s ease-out,
+              transform 0.15s ease-out;
           }
           .checkbox:checked + label::before {
-            @include bg_image("@/assets/list.svg", 90%);
+            @include bg_image("@/assets/arrow.svg", 100%);
+            transform: rotateX(180deg);
+            background-position: center 6px;
           }
           .checkbox:not(:checked) + label:hover::before {
             background-size: 110%;
           }
           .checkbox:checked + label:hover::before {
-            background-size: 100%;
+            background-size: 110%;
           }
           .btn {
             cursor: pointer;
@@ -317,6 +358,7 @@ export default {
         }
       }
       .bottom {
+        margin-top: 30px;
         .links {
           display: flex;
           flex-direction: row;
@@ -333,6 +375,33 @@ export default {
           background-color: #9bb7e74a;
           padding: 15px;
           margin-bottom: 5px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          .btn {
+            background: transparent;
+            height: 23px;
+            width: 23px;
+            margin: 0 auto;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.15s ease-in-out,
+              box-shadow 0.15s ease-in-out;
+            margin: 0;
+            // margin-right: -10px;
+            .icon {
+              width: inherit;
+              height: inherit;
+              transition: background-size 0.15s ease-in-out;
+              @include bg_image("@/assets/cross_black.svg", 100% 100%);
+            }
+            .icon:hover {
+              background-size: 110%;
+            }
+          }
         }
         .grid {
           display: flex;
