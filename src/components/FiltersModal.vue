@@ -26,13 +26,14 @@ export default {
   emits: {
     close: null,
   },
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-    accept() {
-      this.close();
-    },
+  setup(props, { emit }) {
+    const close = () => {
+      emit("close");
+    };
+    const accept = () => {
+      close();
+    };
+    return { close, accept };
   },
 };
 </script>
