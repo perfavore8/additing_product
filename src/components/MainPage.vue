@@ -288,31 +288,16 @@ export default {
           flex-direction: row;
           align-items: center;
           gap: 15px;
-          .checkbox {
-            position: absolute;
-            z-index: -1;
-            opacity: 0;
-          }
-          .checkbox + label {
-            display: inline-flex;
-            align-items: center;
-            user-select: none;
-          }
           .checkbox + label::before {
-            content: "";
-            display: inline-block;
             width: 32px;
             height: 32px;
-            flex-shrink: 0;
-            flex-grow: 0;
-            border-radius: 0.25em;
             margin-left: 17px;
+            border: none;
             @include bg_image("@/assets/arrow.svg", 100%);
-            cursor: pointer;
-            transition: background-image 0.15s ease-out,
-              transform 0.15s ease-out;
           }
           .checkbox:checked + label::before {
+            border-color: transparent;
+            background-color: transparent;
             @include bg_image("@/assets/arrow.svg", 100%);
             transform: rotateX(180deg);
             background-position: center 6px;
@@ -323,33 +308,39 @@ export default {
           .checkbox:checked + label:hover::before {
             background-size: 110%;
           }
+          .checkbox:not(:disabled):active + label::before {
+            background-color: transparent;
+          }
           .btn {
-            cursor: pointer;
             width: 32px;
             height: 32px;
             color: #fff;
-            background: #018361;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            // background: #018361;
+            background: linear-gradient(135deg, #00cc8f, #40bf99, #018360db);
             border-radius: 8px;
             padding: 0;
             .icon {
-              width: inherit;
-              height: inherit;
-              margin: 1px 0 0 1px;
-              @include bg_image("@/assets/plus.svg", 60% 60%);
+              height: 20px;
+              width: 20px;
+              @include bg_image("@/assets/plus.svg", 100%);
             }
           }
           .btn:hover,
           .btn:focus-visible {
-            background-color: #099570;
-            box-shadow: 0 0 5px 2px rgb(9 149 112 / 25%);
+            background-color: #40bf99;
+            box-shadow: 0 0 5px 2px rgb(64 191 153 / 25%);
           }
           .btn:active {
-            background-color: #018361;
-            box-shadow: 0 0 5px 2px rgb(1 131 97 / 25%);
+            background-color: #00cc8f;
+            box-shadow: 0 0 5px 2px rgb(0 204 143 / 25%);
             height: 31px;
             width: 31px;
             .icon {
-              background-size: 55% 55%;
+              height: 19px;
+              width: 19px;
             }
           }
         }
@@ -383,11 +374,8 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.15s ease-in-out,
-              box-shadow 0.15s ease-in-out;
             margin: 0;
             padding: 0;
-            // margin-right: -10px;
             .icon {
               width: inherit;
               height: inherit;

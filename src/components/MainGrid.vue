@@ -96,22 +96,23 @@
       v-if="paginatedData.length != 0"
     >
       <div class="left">
-        <button v-if="page > 1" @click="page -= 1">
+        <button v-if="page > 1" @click="page -= 1" class="btn previous">
           {{ "<" }}
         </button>
-        <span style="margin: 5px">{{ page }}</span>
+        <div class="span">{{ page }}</div>
         <button
           v-if="page * count < data.length - countHideRows"
           @click="page += 1"
+          class="btn next"
         >
           {{ ">" }}
         </button>
-        <select name="count" id="count" class="count" v-model="count">
-          <option>3</option>
-          <option>5</option>
-          <option>10</option>
-          <option>20</option>
-        </select>
+        <selector-vue
+          class="count"
+          :options_props="count_values"
+          :selected_option="{ name: count, value: Math.random() }"
+          @select="change_count"
+        ></selector-vue>
       </div>
       <div class="right">
         <button class="btn btn2" @click="accept()">Добавить к сделке</button>
@@ -122,9 +123,10 @@
 
 <script>
 import { mapGetters } from "vuex";
+import SelectorVue from "./SelectorVue.vue";
 export default {
   name: "Main_grid",
-  components: {},
+  components: { SelectorVue },
   props: {
     data: {
       type: Array,
@@ -141,7 +143,13 @@ export default {
   },
   data() {
     return {
-      count: 20,
+      count: 5,
+      count_values: [
+        { name: "3", value: 1 },
+        { name: "5", value: 2 },
+        { name: "10", value: 3 },
+        { name: "20", value: 4 },
+      ],
       page: 1,
       filtersValue: [],
       updateKey: 0,
@@ -234,6 +242,9 @@ export default {
     // this.open_edit_modal(this.data[0], 0);
   },
   methods: {
+    change_count(option) {
+      this.count = option.name;
+    },
     accept() {
       this.$emit("accept");
     },
@@ -325,9 +336,7 @@ export default {
   gap: 10px;
 }
 .count {
-  margin-top: 20px;
   margin-left: 5px;
-  margin-bottom: 150px;
   height: 26px;
   width: 100px;
 }
@@ -338,72 +347,65 @@ export default {
 .bar_item:first-child {
   width: 17px !important;
 }
-.checkbox {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-.checkbox + label {
-  display: inline-flex;
-  align-items: center;
-  user-select: none;
-}
-.checkbox + label::before {
-  content: "";
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  flex-shrink: 0;
-  flex-grow: 0;
-  border: 1px solid #adb5bd;
-  border-radius: 0.25em;
-  margin-right: 0.5em;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: 50% 50%;
-  cursor: pointer;
-  transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out;
-}
-.checkbox:checked + label::before {
-  border-color: #757575;
-  background-color: #757575;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
-}
-.checkbox:not(:disabled):not(:checked) + label:hover::before {
-  border-color: #75757591;
-}
-.checkbox:not(:disabled):active + label::before {
-  background-color: #75757591;
-  border-color: #75757591;
-}
 .bottom {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-top: 20px;
+  margin-bottom: 20px;
   .left {
-    margin-top: -20px;
-    button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .btn {
+      height: 32px;
+      width: 30px;
+      color: #3f3f3f;
+      background-color: #f0f0f0;
+      border-radius: 50%;
+      padding: 0;
+    }
+    .btn:hover {
+      background-color: hsl(0, 0%, 85%);
+    }
+    .next {
+      padding-left: 2px;
+      padding-bottom: 2px;
+    }
+    .previous {
+      padding-right: 2px;
+      padding-bottom: 2px;
+    }
+    .span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 30px;
+      width: 60px;
+      margin: 5px;
+      border-radius: 25%/50%;
+      background-color: #f0f0f0;
       @include font(400, 16px, 19px);
       color: #3f3f3f;
     }
-    span {
-      @include font(400, 16px, 19px);
-      color: #3f3f3f;
-    }
-    input {
-      @include font(400, 16px, 19px);
-      color: #3f3f3f;
+    .count {
+      margin-top: -7px;
     }
   }
   .right {
     // margin-right: 20px;
     .btn2 {
       color: #fff;
-      background-color: #0d6efd;
+      // background-color: #0d6efd;
+      background: linear-gradient(
+        135deg,
+        hsl(216, 98%, 57%),
+        hsl(216, 98%, 52%),
+        hsl(216, 98%, 42%)
+      );
+      transition: background 0.15s ease-out;
     }
     .btn2:hover {
-      background-color: #0256d4;
       box-shadow: 0 0 5px 2px rgb(2 86 212 / 25%);
     }
   }
@@ -416,8 +418,6 @@ export default {
     margin-top: -1px;
     width: 25px;
     height: 25px;
-    border: none;
-    outline: none;
     background-color: transparent;
   }
   .buttonDuwn {

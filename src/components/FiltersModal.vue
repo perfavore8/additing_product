@@ -281,6 +281,12 @@ export default {
           border: none;
           color: #fff;
           background-color: #6c757d;
+          background: linear-gradient(
+            135deg,
+            hsl(208, 7%, 52%),
+            hsl(208, 7%, 46%),
+            hsl(206, 7%, 40%)
+          );
           @include font(400, 16px);
           border-radius: 5px;
           transition: background-color 0.15s ease-in-out,
@@ -300,20 +306,15 @@ export default {
         display: flex;
         flex-direction: row;
         gap: 10px;
-
-        .btn {
-          cursor: pointer;
-          padding: 6px 12px;
-          height: 36px;
-          border: none;
-          @include font(400, 16px);
-          border-radius: 5px;
-          transition: background-color 0.15s ease-in-out,
-            box-shadow 0.15s ease-in-out;
-        }
         .btn1 {
           color: #fff;
           background-color: #6c757d;
+          background: linear-gradient(
+            135deg,
+            hsl(208, 7%, 54%),
+            hsl(208, 7%, 46%),
+            hsl(206, 7%, 38%)
+          );
         }
         .btn1:hover {
           background-color: #5f676d;
