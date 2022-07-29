@@ -95,22 +95,27 @@
       :class="{ blur: show_edit_modal }"
       v-if="paginatedData.length != 0"
     >
-      <button v-if="page > 1" @click="page -= 1">
-        {{ "<" }}
-      </button>
-      <span style="margin: 5px">{{ page }}</span>
-      <button
-        v-if="page * count < data.length - countHideRows"
-        @click="page += 1"
-      >
-        {{ ">" }}
-      </button>
-      <select name="count" id="count" class="count" v-model="count">
-        <option>3</option>
-        <option>5</option>
-        <option>10</option>
-        <option>20</option>
-      </select>
+      <div class="left">
+        <button v-if="page > 1" @click="page -= 1">
+          {{ "<" }}
+        </button>
+        <span style="margin: 5px">{{ page }}</span>
+        <button
+          v-if="page * count < data.length - countHideRows"
+          @click="page += 1"
+        >
+          {{ ">" }}
+        </button>
+        <select name="count" id="count" class="count" v-model="count">
+          <option>3</option>
+          <option>5</option>
+          <option>10</option>
+          <option>20</option>
+        </select>
+      </div>
+      <div class="right">
+        <button class="btn btn2" @click="accept()">Добавить к сделке</button>
+      </div>
     </div>
   </div>
 </template>
@@ -132,6 +137,7 @@ export default {
   },
   emits: {
     update_changeValue: null,
+    accept: null,
   },
   data() {
     return {
@@ -228,6 +234,9 @@ export default {
     // this.open_edit_modal(this.data[0], 0);
   },
   methods: {
+    accept() {
+      this.$emit("accept");
+    },
     calcDuplicate() {
       let name = "";
       let artic = "";
@@ -295,6 +304,7 @@ export default {
 .table {
   border-collapse: collapse;
   margin: 0 auto;
+  width: 100%;
 }
 .bar_row {
   height: 66px;
@@ -367,17 +377,35 @@ export default {
   border-color: #75757591;
 }
 .bottom {
-  button {
-    @include font(400, 16px, 19px);
-    color: #3f3f3f;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 20px;
+  .left {
+    margin-top: -20px;
+    button {
+      @include font(400, 16px, 19px);
+      color: #3f3f3f;
+    }
+    span {
+      @include font(400, 16px, 19px);
+      color: #3f3f3f;
+    }
+    input {
+      @include font(400, 16px, 19px);
+      color: #3f3f3f;
+    }
   }
-  span {
-    @include font(400, 16px, 19px);
-    color: #3f3f3f;
-  }
-  input {
-    @include font(400, 16px, 19px);
-    color: #3f3f3f;
+  .right {
+    // margin-right: 20px;
+    .btn2 {
+      color: #fff;
+      background-color: #0d6efd;
+    }
+    .btn2:hover {
+      background-color: #0256d4;
+      box-shadow: 0 0 5px 2px rgb(2 86 212 / 25%);
+    }
   }
 }
 .dublitem {

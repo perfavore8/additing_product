@@ -21,11 +21,23 @@
             <label for="grid"></label>
             <button class="btn" @click="show_filters = true">
               <div class="icon"></div>
-              +
             </button>
           </div>
         </div>
         <div class="bottom" v-if="show_cards">
+          <div class="links">
+            <div v-for="(cat, idx) in selected_categoryes" :key="cat">
+              <a
+                href="#"
+                @click="
+                  sel_idx = idx;
+                  selected_categoryes.splice(idx);
+                "
+                >{{ path[idx] }}
+              </a>
+              <span> /</span>
+            </div>
+          </div>
           <div
             class="path"
             v-for="(item, i) in path"
@@ -33,19 +45,6 @@
             v-show="sel_idx == i && show_categoryes"
           >
             <!-- <h2>{{ item }}:</h2> -->
-            <div class="links">
-              <div v-for="idx in i" :key="idx">
-                <a
-                  href="#"
-                  @click="
-                    sel_idx = idx - 1;
-                    selected_categoryes.splice(idx - 1);
-                  "
-                  >{{ path[idx - 1] }}
-                </a>
-                <span> /</span>
-              </div>
-            </div>
             <div class="grid">
               <div
                 class="card"
@@ -87,7 +86,7 @@
                 </div>
               </div>
               <div class="card_footer">
-                <button @click="update_changeValue([row])">
+                <button class="btn btn_del" @click="update_changeValue([row])">
                   Добавить к сделке
                 </button>
               </div>
@@ -329,26 +328,24 @@ export default {
             width: 32px;
             height: 32px;
             color: #fff;
-            background: #357f34;
-            border: none;
-            border-radius: 5px;
-            outline: none;
+            background: #018361;
+            border-radius: 8px;
+            padding: 0;
             .icon {
               width: inherit;
               height: inherit;
-              margin: -1px 0 0 -6px;
+              margin: 1px 0 0 1px;
               @include bg_image("@/assets/plus.svg", 60% 60%);
             }
           }
           .btn:hover,
           .btn:focus-visible {
-            background-color: #339b31;
-            box-shadow: 0 0 5px 2px rgb(53 127 52 / 25%);
+            background-color: #099570;
+            box-shadow: 0 0 5px 2px rgb(9 149 112 / 25%);
           }
           .btn:active {
-            background-color: hsl(119, 52%, 40%);
-            box-shadow: 0 0 5px 2px rgb(53 127 52 / 25%);
-            background-color: #339b31;
+            background-color: #018361;
+            box-shadow: 0 0 5px 2px rgb(1 131 97 / 25%);
             height: 31px;
             width: 31px;
             .icon {
@@ -380,26 +377,27 @@ export default {
           justify-content: space-between;
           .btn {
             background: transparent;
-            height: 23px;
-            width: 23px;
+            height: 17px;
+            width: 17px;
             margin: 0 auto;
-            cursor: pointer;
-            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: background-color 0.15s ease-in-out,
               box-shadow 0.15s ease-in-out;
             margin: 0;
+            padding: 0;
             // margin-right: -10px;
             .icon {
               width: inherit;
               height: inherit;
               transition: background-size 0.15s ease-in-out;
-              @include bg_image("@/assets/cross_black.svg", 100% 100%);
+              @include bg_image("@/assets/cross_black.svg", 90%);
             }
-            .icon:hover {
-              background-size: 110%;
+          }
+          .btn:hover {
+            .icon {
+              background-size: 100%;
             }
           }
         }
@@ -455,9 +453,17 @@ export default {
         .card_footer {
           display: flex;
           flex-direction: row;
-          justify-content: space-between;
+          justify-content: flex-end;
           align-items: flex-end;
           margin-top: 10px;
+          .btn_del {
+            color: #fff;
+            background-color: #a2a9ae;
+          }
+          .btn_del:hover {
+            background-color: #929aa0;
+            box-shadow: 0 0 5px 2px rgb(146 154 160 / 25%);
+          }
         }
       }
     }

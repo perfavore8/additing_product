@@ -1,6 +1,13 @@
 <template>
   <transition-group name="mdl">
     <div class="filters">
+      <div class="item">
+        <selector-vue
+          :options_props="dont_show_filters"
+          :selected_option="{ name: 'Добавить фильтр' }"
+          @select="add_filter"
+        />
+      </div>
       <div
         class="item"
         v-for="(filter, idx) in filtersValue"
@@ -48,6 +55,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import SelectorVue from "@/components/SelectorVue.vue";
 import FilterNumber from "@/components/FiltersSelections/FilterNumber.vue";
 import FilterText from "@/components/FiltersSelections/FilterText.vue";
 import FilterList from "@/components/FiltersSelections/FilterList.vue";
@@ -55,6 +63,7 @@ import FilterDate from "@/components/FiltersSelections/FilterDate.vue";
 import FilterFlag from "@/components/FiltersSelections/FilterFlag.vue";
 export default {
   components: {
+    SelectorVue,
     FilterNumber,
     FilterText,
     FilterList,
@@ -72,10 +81,12 @@ export default {
   },
   emits: {
     updateFiltersValue: null,
+    add_filter: null,
   },
   data() {
     return {
       filtersValue: [],
+      dont_show_filters: [],
     };
   },
   computed: {
@@ -83,6 +94,7 @@ export default {
   },
   mounted() {
     this.feelFilters();
+    this.feelParams();
   },
   watch: {
     filtersValue: {
@@ -91,8 +103,38 @@ export default {
       },
       deep: true,
     },
+    show_filters: {
+      handler: function () {
+        this.feelParams();
+      },
+      deep: true,
+    },
   },
   methods: {
+    feelParams() {
+      let arr = [];
+      this.params.forEach((val, idx) => {
+        if (
+          this.show_filters[idx - 1] !== true &&
+          idx != 0 &&
+          idx != this.params.length - 1
+        ) {
+          const obj = {
+            name: val,
+            value: idx,
+          };
+          arr.push(obj);
+        }
+      });
+      this.dont_show_filters = arr;
+    },
+    add_filter(option) {
+      this.dont_show_filters.splice(
+        this.dont_show_filters.indexOf(option.name),
+        1
+      );
+      this.$emit("add_filter", option);
+    },
     change_filter_value(new_obj, idx) {
       Object.assign(this.filtersValue[idx], new_obj);
     },
@@ -136,29 +178,34 @@ export default {
   // justify-content: space-around;
   flex-wrap: wrap;
   gap: 5px;
-  padding: 30px;
-  border: 1px solid #c9c9c9;
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.05);
+  // background-color: rgba(0, 0, 0, 0.05);
   .item {
+    .v-select {
+      margin-top: 10px;
+      margin-right: 30px;
+      width: 300px;
+      min-width: 300px;
+    }
     // max-width: 23%;
     // width: min-content;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex-grow: 1;
-    border: 1px solid #c9c9c9;
-    border-radius: 5px;
-    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+    // justify-content: space-between;
+    // flex-grow: 1;
+    // border: 1px solid #c9c9c9;
+    // border-radius: 5px;
+    padding: 10px 5px;
     background-color: #fff;
-    gap: 10px;
+    gap: 5px;
     .title {
       @include font(500, 16px, 19px);
     }
   }
-  // .item:deep(.filter) {
-  //   min-width: 100px;
-  //   max-width: none;
-  // }
+  .item:deep(.filter) {
+    min-width: 80px;
+    width: min-content;
+    // max-width: none;
+  }
 }
 </style>

@@ -20,3 +20,13 @@
   font-size: $s;
   line-height: $h;
 }
+.btn {
+  cursor: pointer;
+  padding: 6px 12px;
+  height: 36px;
+  border: none;
+  @include font(400, 16px);
+  outline: none;
+  border-radius: 5px;
+  transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}

@@ -8,17 +8,15 @@
         </button>
       </div>
       <div class="content">
-        <selector-vue
-          :options_props="dont_show_filters"
-          :selected_option="{ name: 'Добавить фильтр' }"
-          @select="add_filter"
-        />
         <keep-alive>
-          <filter-list
+          <filters-list
             :show_filters="show_filters"
+            :dont_show_filters="dont_show_filters"
             @updateFiltersValue="updateFiltersValue"
+            @add_filter="add_filter"
           />
         </keep-alive>
+        <span>{{ dont_show_filters }}</span>
         <div class="accept_btn">
           <button @click="useFilters()" class="accept">Показать</button>
         </div>
@@ -27,12 +25,12 @@
           :data="data"
           :collval="collval"
           @update_changeValue="update_changeValue"
+          @accept="accept"
         />
       </div>
       <div class="footer">
         <div class="btns">
           <button class="btn btn1" @click="close()">Назад</button>
-          <button class="btn btn2" @click="accept()">Добавить к сделке</button>
         </div>
       </div>
     </div>
@@ -40,16 +38,14 @@
 </template>
 
 <script>
-import FilterList from "@/components/FiltersList.vue";
-import SelectorVue from "@/components/SelectorVue.vue";
+import FiltersList from "@/components/FiltersList.vue";
 import MainGrid from "@/components/MainGrid.vue";
 import { reactive, ref } from "@vue/reactivity";
-import { computed, nextTick, onMounted, watch } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
 export default {
   components: {
-    FilterList,
-    SelectorVue,
+    FiltersList,
     MainGrid,
   },
   emits: {
@@ -68,27 +64,6 @@ export default {
     params.value.pop();
     params.value.shift();
     const show_filters = ref([true, true, true, true, true]);
-    onMounted(() => feelParams());
-    watch(
-      () => show_filters,
-      () => {
-        nextTick(() => feelParams());
-      }
-    );
-    const dont_show_filters = ref([]);
-    const feelParams = () => {
-      let arr = [];
-      params.value.forEach((val, idx) => {
-        if (show_filters.value[idx] !== true) {
-          const obj = {
-            name: val,
-            value: idx,
-          };
-          arr.push(obj);
-        }
-      });
-      dont_show_filters.value = arr;
-    };
     const add_filter = (option) => {
       show_filters.value[params.value.indexOf(option.name)] = true;
     };
@@ -210,7 +185,6 @@ export default {
       close,
       accept,
       show_filters,
-      dont_show_filters,
       add_filter,
       data,
       collval,
@@ -285,8 +259,13 @@ export default {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      .v-select {
-        width: 300px;
+      .filters_list {
+        display: flex;
+        flex-direction: row;
+        gap: 30px;
+        padding: 30px;
+        border: 1px solid #c9c9c9;
+        border-radius: 5px;
       }
       .main_grid {
         overflow-x: auto;
@@ -339,14 +318,6 @@ export default {
         .btn1:hover {
           background-color: #5f676d;
           box-shadow: 0 0 5px 2px rgb(95 103 109 / 25%);
-        }
-        .btn2 {
-          color: #fff;
-          background-color: #0d6efd;
-        }
-        .btn2:hover {
-          background-color: #0256d4;
-          box-shadow: 0 0 5px 2px rgb(2 86 212 / 25%);
         }
       }
     }
