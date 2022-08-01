@@ -254,11 +254,11 @@ export default {
 .app {
   height: 100vh;
   .container {
-    overflow-y: hidden;
+    overflow-y: auto;
     min-width: 340px;
     max-width: 50%;
     width: 34%;
-    height: 100%;
+    height: calc(100vh - 42px);
     padding: 20px;
     margin-left: 65px;
     border: 1px solid #ddd;
@@ -266,6 +266,7 @@ export default {
       margin-bottom: 30px;
     }
     .content {
+      overflow-y: auto;
       .top {
         display: flex;
         flex-direction: row;

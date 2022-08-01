@@ -125,7 +125,7 @@
 import { mapGetters } from "vuex";
 import SelectorVue from "./SelectorVue.vue";
 export default {
-  name: "Main_grid",
+  name: "MainGrid",
   components: { SelectorVue },
   props: {
     data: {
@@ -240,6 +240,9 @@ export default {
     this.calcDuplicate();
     this.feelIdxes();
     // this.open_edit_modal(this.data[0], 0);
+  },
+  deactivated() {
+    this.changeValue = [];
   },
   methods: {
     change_count(option) {

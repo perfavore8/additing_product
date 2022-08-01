@@ -18,7 +18,7 @@
         </keep-alive>
         <span>{{ dont_show_filters }}</span>
         <div class="accept_btn">
-          <button @click="useFilters()" class="accept">Показать</button>
+          <button @click="feelFilters()" class="accept">Показать</button>
         </div>
         <main-grid
           class="main_grid"
@@ -43,6 +43,7 @@ import MainGrid from "@/components/MainGrid.vue";
 import { reactive, ref } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
+import { useFilters } from "@/composition/filters";
 export default {
   components: {
     FiltersList,
@@ -53,20 +54,8 @@ export default {
     update_changeValue: null,
   },
   setup(props, { emit }) {
+    const { filtersValue, eqval, includes, updateFiltersValue } = useFilters();
     const store = useStore();
-    const params1 = computed(() => {
-      return store.getters.params;
-    });
-    const params = ref([]);
-    params1.value.forEach((val) => {
-      params.value.push(val);
-    });
-    params.value.pop();
-    params.value.shift();
-    const show_filters = ref([true, true, true, true, true]);
-    const add_filter = (option) => {
-      show_filters.value[params.value.indexOf(option.name)] = true;
-    };
     const close = () => {
       emit("close");
     };
@@ -128,37 +117,10 @@ export default {
       });
     };
 
-    const filtersValue = ref([]);
-    const updateFiltersValue = (value) => {
-      filtersValue.value = value;
-    };
-
-    const includes = (arr, Value, idx) => {
-      const result = [];
-      arr.forEach((item) => {
-        item[idx].split(" ").forEach((name) => {
-          if (name.includes(Value)) {
-            result.push(item);
-          }
-        });
-      });
-      return result;
-    };
-    const eqval = (arr, Value, idx) => {
-      const result = [];
-      arr.forEach((item) => {
-        if (item[idx] == Value) {
-          result.push(item);
-        }
-      });
-      return result;
-    };
-
-    const useFilters = () => {
+    const feelFilters = () => {
       update_data();
       const arr = [0, 1];
       arr.forEach((idx) => {
-        console.log(filtersValue.value[idx].value);
         if (
           filtersValue.value[idx].value != "" &&
           filtersValue.value[idx].value != null &&
@@ -182,15 +144,14 @@ export default {
     };
 
     return {
+      ...useFilters(),
+      updateFiltersValue,
       close,
       accept,
-      show_filters,
-      add_filter,
       data,
       collval,
       update_changeValue,
-      updateFiltersValue,
-      useFilters,
+      feelFilters,
     };
   },
 };
