@@ -374,9 +374,15 @@ export default {
       background-color: #f0f0f0;
       border-radius: 50%;
       padding: 0;
+      transition: 0.2s ease-in-out;
+      box-shadow: 0 0 0;
     }
     .btn:hover {
       background-color: hsl(0, 0%, 85%);
+    }
+    .btn:active {
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0.25) inset,
+        0 2px 3px rgba(0, 0, 0, 0.25) inset, 0 1px 1px rgba(255, 255, 255, 0.05);
     }
     .next {
       padding-left: 2px;

@@ -26,16 +26,16 @@
         </div>
         <div class="bottom" v-if="show_cards">
           <div class="links">
-            <div v-for="(cat, idx) in selected_categoryes" :key="cat">
-              <a
-                href="#"
-                @click="
-                  sel_idx = idx;
-                  selected_categoryes.splice(idx);
-                "
-                >{{ path[idx] }}
-              </a>
-              <span> /</span>
+            <div
+              class="triangle"
+              v-for="(cat, idx) in selected_categoryes"
+              :key="cat"
+              @click="
+                sel_idx = idx;
+                selected_categoryes.splice(idx);
+              "
+            >
+              {{ path[idx] }}
             </div>
           </div>
           <div
@@ -265,7 +265,11 @@ export default {
     .header {
       margin-bottom: 30px;
     }
+    .content::-webkit-scrollbar {
+      width: 0;
+    }
     .content {
+      height: calc(100% - 40px);
       overflow-y: auto;
       .top {
         display: flex;
@@ -273,6 +277,7 @@ export default {
         justify-content: space-between;
         .v-select {
           width: calc(80% - 26px);
+          margin: 2px;
         }
         .v-select:deep(.title) {
           p {
@@ -351,12 +356,88 @@ export default {
         .links {
           display: flex;
           flex-direction: row;
-          a {
-            @include font(400, 16px);
+          flex-wrap: wrap;
+          margin-bottom: 10px;
+          $step: 12px;
+
+          .triangle {
+            cursor: pointer;
+            padding: 5px 10px 5px 15px;
+            height: 20px;
+            margin: 5px 0;
+            @include font(400, 15px);
+            -webkit-clip-path: polygon(
+              0 0,
+              calc(100% - $step) 0,
+              100% 50%,
+              calc(100% - $step) 100%,
+              0% 100%,
+              $step 50%
+            );
+            clip-path: polygon(
+              0 0,
+              calc(100% - $step) 0,
+              100% 50%,
+              calc(100% - $step) 100%,
+              0% 100%,
+              $step 50%
+            );
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            color: #000;
           }
-          a:hover {
-            text-decoration: none;
-            opacity: 0.8;
+          .triangle:hover {
+            padding: 5px 12px 5px 17px;
+            margin-left: -2px;
+            margin-right: -2px;
+            background: #e6e6e6 !important;
+          }
+          .triangle:first-child:hover {
+            margin-left: 0;
+          }
+          .triangle:active {
+            background: #d6d6d6 !important;
+          }
+
+          .triangle:nth-child(3n + 1) {
+            background: linear-gradient(
+              45deg,
+              hsl(0, 0%, 90%),
+              hsl(0, 0%, 84%)
+            );
+          }
+          .triangle:nth-child(3n + 2) {
+            background: linear-gradient(
+              45deg,
+              hsl(0, 0%, 84%),
+              hsl(0, 0%, 83%),
+              hsl(0, 0%, 84%)
+            );
+          }
+          .triangle:nth-child(3n + 3) {
+            background: linear-gradient(
+              45deg,
+              hsl(0, 0%, 84%),
+              hsl(0, 0%, 90%)
+            );
+          }
+          .triangle:first-child {
+            padding-left: 5px;
+            -webkit-clip-path: polygon(
+              0 0,
+              calc(100% - $step) 0,
+              100% 50%,
+              calc(100% - $step) 100%,
+              0% 100%
+            );
+            clip-path: polygon(
+              0 0,
+              calc(100% - $step) 0,
+              100% 50%,
+              calc(100% - $step) 100%,
+              0% 100%
+            );
           }
         }
         > .row {
