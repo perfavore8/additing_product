@@ -7,6 +7,8 @@ export function useFilters() {
   const add_filter = (option) => {
     show_filters.value[params.value.indexOf(option.name)] = true;
   };
+  const clean_filters = () =>
+    (show_filters.value = [true, true, true, true, true]);
   const filtersValue = ref([]);
   const updateFiltersValue = (value) => {
     filtersValue.value = value;
@@ -32,7 +34,6 @@ export function useFilters() {
     });
     return result;
   };
-  const qwe = (val) => console.log(val);
   return {
     show_filters,
     add_filter,
@@ -40,6 +41,6 @@ export function useFilters() {
     updateFiltersValue,
     includes,
     eqval,
-    qwe,
+    clean_filters,
   };
 }

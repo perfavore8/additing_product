@@ -48,20 +48,15 @@
             v-show="!showduplicate[i + idxes[page - 1][0]]"
           >
             <td class="item">
-              <input
-                type="checkbox"
-                class="checkbox"
-                :id="i + 'a'"
-                v-model="changeValue[data.indexOf(row)]"
-              />
-              <label :for="i + 'a'"></label>
-              <transition name="modal_count">
-                <div class="modal_count" v-if="changeValue[data.indexOf(row)]">
-                  <div class="modal_form">
-                    <input type="number" class="input" v-model="countes[i]" />
-                  </div>
-                </div>
-              </transition>
+              <div
+                class="modal_form"
+                v-if="
+                  duplicate[i + idxes[page - 1][0]] ||
+                  !duplicate[i + idxes[page - 1][0] + 1]
+                "
+              >
+                <input type="number" class="input" v-model="countes[i]" />
+              </div>
             </td>
             <td
               :class="{ open_dublitem: duplicate[i + idxes[page - 1][0]] }"
@@ -145,7 +140,6 @@ export default {
     },
   },
   emits: {
-    update_changeValue: null,
     accept: null,
     update_countes: null,
   },
@@ -161,7 +155,6 @@ export default {
       page: 1,
       filtersValue: [],
       updateKey: 0,
-      changeValue: [],
       duplicate: [],
       showduplicate: [],
       startIdx: 0,
@@ -178,13 +171,7 @@ export default {
     paginatedData: {
       handler: function () {
         this.updateKey += 1;
-        this.changeValue = [];
-      },
-      deep: true,
-    },
-    changeValue: {
-      handler: function () {
-        this.$emit("update_changeValue", this.changeValue);
+        this.countes = [];
       },
       deep: true,
     },
@@ -257,7 +244,7 @@ export default {
     // this.open_edit_modal(this.data[0], 0);
   },
   deactivated() {
-    this.changeValue = [];
+    this.countes = [];
   },
   methods: {
     change_count(option) {
@@ -327,6 +314,30 @@ export default {
   color: #3f3f3f;
   text-align: start;
   min-width: 50px;
+  .input {
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+    outline: none;
+    border: none;
+    border: 1px solid #c4c4c4;
+    border-radius: 4px;
+    padding: 5px;
+    background: transparent;
+    appearance: none;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .modal_form {
+    width: 40px;
+    height: 28px;
+    margin-left: 10px;
+    background: #f0f0f0;
+    position: relative;
+    border-radius: 4px;
+  }
 }
 .row {
 }
@@ -359,8 +370,7 @@ export default {
   width: 100px;
 }
 .item:first-child {
-  width: 17px !important;
-  text-align: center;
+  padding-left: 5px;
 }
 .bar_item:first-child {
   width: 17px !important;
@@ -480,78 +490,5 @@ export default {
 .rows-enter-from,
 .rows-leave-to {
   opacity: 0;
-}
-
-// .modal_count-enter-active,
-// .modal_count-leave-active {
-//   transition: all 0.5s ease-in-out;
-// }
-// .modal_count-enter-from,
-// .modal_count-leave-to {
-//   opacity: 0;
-// }
-.modal_count-enter-active {
-  animation: bounce-in 0.3s;
-}
-.modal_count-leave-active {
-  animation: bounce-in 0.3s reverse;
-}
-@keyframes bounce-in {
-  0% {
-    transform: rotate(90deg);
-    opacity: 0;
-  }
-  60% {
-    transform: rotate(-30deg);
-    opacity: 0.9;
-  }
-  100% {
-    transform: rotate(0deg);
-    opacity: 1;
-  }
-}
-.modal_count {
-  z-index: 99999;
-  position: relative;
-  left: 38px;
-  top: -23px;
-  height: 0;
-  width: 0;
-  .input {
-    width: calc(100% - 12px);
-    height: calc(100% - 12px);
-    outline: none;
-    border: none;
-    border: 1px solid #c4c4c4;
-    border-left-color: #c4c4c480;
-    border-radius: 4px;
-    padding: 5px;
-    background: transparent;
-    appearance: none;
-  }
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  .modal_form {
-    width: 56px;
-    height: 28px;
-    margin-left: 10px;
-    background: #f0f0f0;
-    position: relative;
-    border-radius: 4px;
-  }
-  .modal_form:before {
-    content: "";
-    width: 0;
-    height: 0;
-    position: absolute;
-    right: 100%;
-    top: calc(50% - 6px);
-    border-top: 6px solid transparent;
-    border-right: 10px solid #e5e5e5;
-    border-bottom: 6px solid transparent;
-  }
 }
 </style>

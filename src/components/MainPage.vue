@@ -29,6 +29,9 @@
             <div class="links">
               <div
                 class="triangle"
+                :class="{
+                  triangle_last: path.length - 1 == idx,
+                }"
                 v-for="(cat, idx) in selected_categoryes"
                 :key="cat"
                 @click="
@@ -91,7 +94,7 @@
                 <div class="card_footer">
                   <button
                     class="btn btn_del"
-                    @click="update_changeValue([row])"
+                    @click="update_changeValue([row], [1])"
                   >
                     Добавить к сделке
                   </button>
@@ -133,6 +136,9 @@
                   <div class="value" v-else>
                     {{ search_value(item.name, row) }}
                   </div>
+                </div>
+                <div class="footer">
+                  <button class="btn btn1">возврат</button>
                 </div>
               </div>
             </transition>
@@ -491,6 +497,13 @@ export default {
           .triangle:first-child:hover {
             margin-left: 0;
           }
+          .triangle_last {
+            color: #fff;
+            background: rgba(27, 53, 70, 0.945) !important;
+          }
+          .triangle_last:hover {
+            background: rgba(27, 53, 70, 0.851) !important;
+          }
           .triangle:active {
             background: #d6d6d6 !important;
           }
@@ -608,6 +621,26 @@ export default {
                 -webkit-appearance: none;
                 margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
               }
+            }
+          }
+          .footer {
+            display: flex;
+            justify-content: end;
+            .btn1 {
+              padding: 0 12px;
+              height: 32px;
+              color: #fff;
+              background-color: #6c757d;
+              background: linear-gradient(
+                135deg,
+                hsl(208, 7%, 66%),
+                hsl(208, 7%, 58%),
+                hsl(206, 7%, 50%)
+              );
+            }
+            .btn1:hover {
+              background-color: #5f676d;
+              box-shadow: 0 0 5px 2px rgb(95 103 109 / 25%);
             }
           }
         }

@@ -16,9 +16,9 @@
             @add_filter="add_filter"
           />
         </keep-alive>
-        <span>{{ dont_show_filters }}</span>
         <div class="accept_btn">
-          <button @click="feelFilters()" class="accept">Показать</button>
+          <button @click="clean_filters()" class="btn1 btn">Очистить</button>
+          <button @click="feelFilters()" class="btn2 btn">Применить</button>
         </div>
         <main-grid
           class="main_grid"
@@ -63,8 +63,8 @@ export default {
     const accept = () => {
       let array = [];
       let array2 = [];
-      changeValue.value.forEach((val, idx) => {
-        if (val) {
+      countes.value.forEach((val, idx) => {
+        if (val != undefined && val != "") {
           array.push(data.value[idx]);
           array2.push(countes.value[idx]);
         }
@@ -113,13 +113,6 @@ export default {
       false,
     ];
 
-    const changeValue = ref([]);
-    const update_changeValue = (arr) => {
-      arr.forEach((val, idx) => {
-        changeValue.value[idx] = val;
-      });
-    };
-
     const feelFilters = () => {
       update_data();
       const arr = [0, 1];
@@ -156,7 +149,6 @@ export default {
       accept,
       data,
       collval,
-      update_changeValue,
       feelFilters,
       update_countes,
     };
@@ -241,13 +233,22 @@ export default {
       }
       .accept_btn {
         text-align: right;
-        .accept {
-          cursor: pointer;
-          padding: 6px 12px;
-          height: 36px;
-          width: 200px;
-          border: none;
-          color: #fff;
+        .btn1 {
+          width: 130px;
+          background: linear-gradient(
+            135deg,
+            hsl(208, 7%, 52%),
+            hsl(208, 7%, 46%),
+            hsl(206, 7%, 40%)
+          );
+        }
+        .btn1:hover {
+          background-color: #5f676d;
+          box-shadow: 0 0 5px 2px rgb(95 103 109 / 25%);
+        }
+        .btn2 {
+          margin-left: 10px;
+          width: 130px;
           background-color: #6c757d;
           background: linear-gradient(
             135deg,
@@ -255,14 +256,9 @@ export default {
             hsl(208, 7%, 46%),
             hsl(206, 7%, 40%)
           );
-          @include font(400, 16px);
-          border-radius: 5px;
-          transition: background-color 0.15s ease-in-out,
-            box-shadow 0.15s ease-in-out;
         }
-        .accept:hover {
-          background-color: #5f676d;
-          box-shadow: 0 0 5px 2px rgb(95 103 109 / 25%);
+        .btn2:hover {
+          box-shadow: 0 0 5px 2px rgb(2 86 212 / 25%);
         }
       }
     }
