@@ -5,7 +5,7 @@
       <div class="content">
         <div class="top">
           <selector-vue
-            :options_props="short_data"
+            :options_props="available_data"
             @select="select"
             :selected_option="{
               name: 'Добавление (поиск на складе по названию или артикулу)...',
@@ -24,83 +24,118 @@
             </button>
           </div>
         </div>
-        <div class="bottom" v-if="show_cards">
-          <div class="links">
-            <div
-              class="triangle"
-              v-for="(cat, idx) in selected_categoryes"
-              :key="cat"
-              @click="
-                sel_idx = idx;
-                selected_categoryes.splice(idx);
-              "
-            >
-              {{ path[idx] }}
-            </div>
-          </div>
-          <div
-            class="path"
-            v-for="(item, i) in path"
-            :key="item"
-            v-show="sel_idx == i && show_categoryes"
-          >
-            <!-- <h2>{{ item }}:</h2> -->
-            <div class="grid">
+        <transition name="rows">
+          <div class="bottom" v-if="show_cards">
+            <div class="links">
               <div
-                class="card"
-                v-for="select in categoryes[item]"
-                :key="select"
+                class="triangle"
+                v-for="(cat, idx) in selected_categoryes"
+                :key="cat"
                 @click="
-                  selected_categoryes.push(select);
-                  sel_idx += 1;
+                  sel_idx = idx;
+                  selected_categoryes.splice(idx);
                 "
               >
-                <div class="row">
-                  <div class="name"></div>
-                  <div class="value">{{ select }}</div>
-                </div>
+                {{ path[idx] }}
               </div>
             </div>
-          </div>
-          <div
-            class="grid"
-            v-if="!show_categoryes || path.length == selected_categoryes.length"
-          >
-            <label v-if="paginatedData.length == 0" class="text">
-              Ничего не найдено
-            </label>
-            <div class="card" v-for="row in paginatedData" :key="row">
-              <div class="row">
-                <div class="name">{{ params[1] }} :</div>
-                <div class="value">{{ row[0] }}</div>
-              </div>
-              <div class="rows">
+            <div
+              class="path"
+              v-for="(item, i) in path"
+              :key="item"
+              v-show="sel_idx == i && show_categoryes"
+            >
+              <!-- <h2>{{ item }}:</h2> -->
+              <div class="grid">
                 <div
-                  class="row"
-                  v-for="(item, idx) in row"
-                  :key="item"
-                  v-show="idx != 0"
+                  class="card"
+                  v-for="select in categoryes[item]"
+                  :key="select"
+                  @click="
+                    selected_categoryes.push(select);
+                    sel_idx += 1;
+                  "
                 >
-                  <div class="name">{{ params[idx + 1] }} :</div>
-                  <div class="value">{{ item }}</div>
+                  <div class="row">
+                    <div class="name"></div>
+                    <div class="value">{{ select }}</div>
+                  </div>
                 </div>
               </div>
-              <div class="card_footer">
-                <button class="btn btn_del" @click="update_changeValue([row])">
-                  Добавить к сделке
-                </button>
+            </div>
+            <div
+              class="grid"
+              v-if="
+                !show_categoryes || path.length == selected_categoryes.length
+              "
+            >
+              <label v-if="paginatedData.length == 0" class="text">
+                Ничего не найдено
+              </label>
+              <div class="card" v-for="row in paginatedData" :key="row">
+                <div class="row">
+                  <div class="name">{{ params[1] }} :</div>
+                  <div class="value">{{ row[0] }}</div>
+                </div>
+                <div class="rows">
+                  <div
+                    class="row"
+                    v-for="(item, idx) in row"
+                    :key="item"
+                    v-show="idx != 0"
+                  >
+                    <div class="name">{{ params[idx + 1] }} :</div>
+                    <div class="value">{{ item }}</div>
+                  </div>
+                </div>
+                <div class="card_footer">
+                  <button
+                    class="btn btn_del"
+                    @click="update_changeValue([row])"
+                  >
+                    Добавить к сделке
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </transition>
         <div class="bottom">
           <div class="row" v-for="(row, idx) in rows" :key="row">
-            <label>
-              {{ row }}
-            </label>
-            <button class="btn" @click="handle_delete(row, idx)">
-              <div class="icon"></div>
-            </button>
+            <div class="row_title" @click="toShowData(idx)">
+              <label>
+                {{ short_value(row) }}
+              </label>
+              <button class="btn" @click="handle_delete(row, idx)">
+                <div class="icon"></div>
+              </button>
+            </div>
+            <transition name="rows">
+              <div class="rows" v-if="show_data[idx]">
+                <div class="row" v-for="(item, index) in fields" :key="item">
+                  <div class="name">{{ item.name }}</div>
+                  <input
+                    class="input"
+                    type="number"
+                    v-model="countes[idx].count"
+                    v-if="index == 0"
+                  />
+                  <input
+                    class="input"
+                    v-model="countes[idx].company"
+                    v-else-if="index == 1"
+                  />
+                  <input
+                    class="input"
+                    v-model="rows[idx][search_idx(item.name)]"
+                    v-else-if="item.change"
+                  />
+                  <div class="value" v-else>
+                    {{ search_value(item.name, row) }}
+                  </div>
+                </div>
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -108,13 +143,15 @@
     </div>
   </div>
   <teleport to="body">
-    <keep-alive>
-      <filters-modal
-        v-if="show_filters"
-        @close="close_filters"
-        @update_changeValue="update_changeValue"
-      ></filters-modal>
-    </keep-alive>
+    <transition name="rows">
+      <keep-alive>
+        <filters-modal
+          v-if="show_filters"
+          @close="close_filters"
+          @update_changeValue="update_changeValue"
+        ></filters-modal>
+      </keep-alive>
+    </transition>
   </teleport>
 </template>
 
@@ -137,8 +174,28 @@ export default {
       short_data: [],
       cat_for_short_dat: ["Название", "Артикул", "№ партии"],
       rows: [],
+      available_data: [],
       show_cards: false,
       show_filters: false,
+      countes: [],
+      show_data: [],
+      fields: [
+        { name: "Количество", change: true },
+        { name: "Поставщик", change: true },
+        { name: "Группа", change: false },
+        { name: "Артикул", change: false },
+        { name: "На складе", change: false },
+        { name: "В резерве", change: false },
+        { name: "Цена", change: true },
+        { name: "Себестоимость", change: false },
+        { name: "№ партии", change: false },
+        { name: "Описание", change: true },
+        { name: "Единицы измерений", change: false },
+        { name: "Поступление", change: false },
+        { name: "Сумма ₽", change: false },
+        { name: "Итого к оплате ₽", change: false },
+        { name: "Прибыль ₽", change: false },
+      ],
     };
   },
   computed: {
@@ -164,7 +221,7 @@ export default {
   },
   mounted() {
     this.get_data_categoryes();
-    this.get_short_data(this.data);
+    this.feel_available_data();
   },
   watch: {
     show_cards() {
@@ -176,27 +233,44 @@ export default {
   },
   methods: {
     handle_delete(row, idx) {
-      this.short_data.push({ name: row, value: Math.random() });
+      const obj = {
+        name: this.short_value(row),
+        data: row,
+        value: Math.random(),
+      };
+      this.available_data.push(obj);
       this.rows.splice(idx, 1);
+      this.countes.splice(idx, 1);
     },
-    update_changeValue(arr) {
-      arr.forEach((val) => {
-        this.get_short_data([val]);
-        const name = this.short_data[this.short_data.length - 1].name;
-        if (!this.rows.includes(name)) {
-          this.rows.push(name);
+    update_changeValue(arr, countes) {
+      arr.forEach((val, idx) => {
+        if (!this.rows.includes(val)) {
+          let array = [];
+          val.forEach((item) => array.push(item));
+          this.rows.push(array);
+          let count = null;
+          countes[idx] == undefined ? (count = 0) : (count = countes[idx]);
+          const obj = {
+            count: count,
+            company: "",
+          };
+          this.countes.push(obj);
         }
-        this.short_data.pop();
       });
     },
     close_filters() {
       this.show_filters = false;
     },
     select(value) {
-      this.short_data.forEach((val, idx) => {
-        if (val.name == value.name) this.short_data.splice(idx, 1);
+      this.available_data.forEach((val, idx) => {
+        if (val.data == value.data) this.available_data.splice(idx, 1);
       });
-      this.rows.push(value.name);
+      this.rows.push(value.data);
+      const obj = {
+        count: 1,
+        company: "",
+      };
+      this.countes.push(obj);
     },
     get_data_categoryes() {
       this.categoryes = {};
@@ -225,25 +299,43 @@ export default {
       });
       Object.assign(this.categoryes, result);
     },
-    get_short_data(arr) {
-      // this.short_data = [];
-      arr.forEach((val, index) => {
-        const search_idx = (val) => {
-          return this.params.indexOf(val) - 1;
+    feel_available_data() {
+      this.data.forEach((val, idx) => {
+        const obj = {
+          name: this.short_value(val),
+          data: val,
+          value: idx,
         };
-        let str = "";
-        this.cat_for_short_dat.forEach((value, idx) => {
-          idx == 0
-            ? (str = str + val[search_idx(value)] + " (")
-            : (str = str + value + ": " + val[search_idx(value)] + " ");
-        });
-        str = str + ")";
-        const dat = {
-          name: str,
-          value: index,
-        };
-        this.short_data.push(dat);
+        this.available_data.push(obj);
       });
+    },
+    short_value(data) {
+      const search_idx = (val) => {
+        return this.params.indexOf(val) - 1;
+      };
+      let str = "";
+      this.cat_for_short_dat.forEach((value, idx) => {
+        idx == 0
+          ? (str = str + data[search_idx(value)] + " (")
+          : (str = str + value + ": " + data[search_idx(value)] + " ");
+      });
+      str = str + ")";
+      return str;
+    },
+    search_value(str, row) {
+      const idx = this.search_idx(str);
+      if (idx != -2) {
+        return row[idx];
+      }
+    },
+    search_idx(str) {
+      const idx = this.params.indexOf(str) - 1;
+      return idx;
+    },
+    toShowData(idx) {
+      const val = this.show_data[idx];
+      this.show_data = [];
+      this.show_data[idx] = !val;
     },
   },
 };
@@ -253,6 +345,7 @@ export default {
 @import "@/app.scss";
 .app {
   height: 100vh;
+  user-select: none;
   .container {
     overflow-y: auto;
     min-width: 340px;
@@ -299,6 +392,7 @@ export default {
             height: 32px;
             margin-left: 17px;
             border: none;
+            transition: all 0.15s ease-ount;
             @include bg_image("@/assets/arrow.svg", 100%);
           }
           .checkbox:checked + label::before {
@@ -306,13 +400,14 @@ export default {
             background-color: transparent;
             @include bg_image("@/assets/arrow.svg", 100%);
             transform: rotateX(180deg);
-            background-position: center 6px;
+            background-position: center 8px;
           }
           .checkbox:not(:checked) + label:hover::before {
             background-size: 110%;
           }
           .checkbox:checked + label:hover::before {
             background-size: 110%;
+            background-position: center 6px;
           }
           .checkbox:not(:disabled):active + label::before {
             background-color: transparent;
@@ -442,32 +537,77 @@ export default {
         }
         > .row {
           width: calc(100% - 30px);
-          background-color: #9bb7e74a;
-          padding: 15px;
           margin-bottom: 5px;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          .btn {
-            background: transparent;
-            height: 17px;
-            width: 17px;
-            margin: 0 auto;
+          @include font(400, 15px);
+          .row_title {
+            padding: 15px;
+            width: 100%;
+            background-color: #9bb7e74a;
+            padding-bottom: 20px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            padding: 0;
-            .icon {
-              width: inherit;
-              height: inherit;
-              transition: background-size 0.15s ease-in-out;
-              @include bg_image("@/assets/cross_black.svg", 90%);
+            flex-direction: row;
+            justify-content: space-between;
+            .btn {
+              background: transparent;
+              height: 17px;
+              width: 17px;
+              margin: 0 auto;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0;
+              padding: 0;
+              .icon {
+                width: inherit;
+                height: inherit;
+                transition: background-size 0.15s ease-in-out;
+                @include bg_image("@/assets/cross_black.svg", 90%);
+              }
+            }
+            .btn:hover {
+              .icon {
+                background-size: 100%;
+              }
             }
           }
-          .btn:hover {
-            .icon {
-              background-size: 100%;
+          .rows {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: calc(100% - 2px);
+            padding: 15px;
+            border: 1px solid #f1f1f1;
+            .row {
+              display: flex;
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: flex-end;
+              height: 34px;
+              .name {
+                width: 40%;
+              }
+              .value {
+                width: 60%;
+              }
+              .input {
+                width: 60%;
+                height: 90%;
+                border: 1px solid #dbdedf;
+                border-radius: 3px;
+                padding: 8px 9px 7px;
+                box-sizing: border-box;
+                color: #313942;
+                background: #fff;
+                @include font(400, 15px);
+                outline: 0;
+                appearance: 0;
+              }
+              input::-webkit-outer-spin-button,
+              input::-webkit-inner-spin-button {
+                /* display: none; <- Crashes Chrome on hover */
+                -webkit-appearance: none;
+                margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+              }
             }
           }
         }
@@ -541,5 +681,14 @@ export default {
 }
 .disable {
   pointer-events: none;
+}
+.rows-enter-active,
+.rows-leave-active {
+  transition: all 0.15s ease-out;
+}
+.rows-enter-from,
+.rows-leave-to {
+  opacity: 0;
+  transform: translateY(-40px);
 }
 </style>

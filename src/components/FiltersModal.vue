@@ -26,6 +26,7 @@
           :collval="collval"
           @update_changeValue="update_changeValue"
           @accept="accept"
+          @update_countes="update_countes"
         />
       </div>
       <div class="footer">
@@ -61,12 +62,14 @@ export default {
     };
     const accept = () => {
       let array = [];
+      let array2 = [];
       changeValue.value.forEach((val, idx) => {
         if (val) {
           array.push(data.value[idx]);
+          array2.push(countes.value[idx]);
         }
       });
-      emit("update_changeValue", array);
+      emit("update_changeValue", array, array2);
       close();
     };
 
@@ -143,6 +146,9 @@ export default {
       });
     };
 
+    const countes = ref([]);
+    const update_countes = (val) => (countes.value = val);
+
     return {
       ...useFilters(),
       updateFiltersValue,
@@ -152,6 +158,7 @@ export default {
       collval,
       update_changeValue,
       feelFilters,
+      update_countes,
     };
   },
 };

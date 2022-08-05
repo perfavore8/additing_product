@@ -58,7 +58,7 @@
               <transition name="modal_count">
                 <div class="modal_count" v-if="changeValue[data.indexOf(row)]">
                   <div class="modal_form">
-                    <input type="number" class="input" />
+                    <input type="number" class="input" v-model="countes[i]" />
                   </div>
                 </div>
               </transition>
@@ -147,6 +147,7 @@ export default {
   emits: {
     update_changeValue: null,
     accept: null,
+    update_countes: null,
   },
   data() {
     return {
@@ -165,6 +166,7 @@ export default {
       showduplicate: [],
       startIdx: 0,
       idxes: [[0, 6]],
+      countes: [],
     };
   },
   watch: {
@@ -183,6 +185,12 @@ export default {
     changeValue: {
       handler: function () {
         this.$emit("update_changeValue", this.changeValue);
+      },
+      deep: true,
+    },
+    countes: {
+      handler: function () {
+        this.$emit("update_countes", this.countes);
       },
       deep: true,
     },
